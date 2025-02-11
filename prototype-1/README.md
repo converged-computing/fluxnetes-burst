@@ -99,12 +99,16 @@ Right now we will use a full usernetes setup, and eventually we can build an AMI
 ```bash
 git clone https://github.com/converged-computing/fluxnetes-burst
 cd fluxnetes-burst/prototype-1/workers
+```
 
-# Combine the make up and join command
+This will use the start-script.sh as a template to generate startup.sh, which
+is the base plus the join command.
+
+```bash
 echo "cat <<EOF > /home/ubuntu/usernetes/join-command" >> start-script.sh
-cat start-script.sh ../../../join-command > start-script.sh
-echo "EOF" >> start-script.sh
-echo "make up && sleep 5 && make kubeadm-join" >> ./start-script.sh
+cat start-script.sh ../../../join-command > startup.sh
+echo "EOF" >> startup.sh
+echo "make up && sleep 5 && make kubeadm-join" >> ./startup.sh
 ```
 
 Then bring up the workers! Note you can customize terraform variables in the environment. E.g.,
@@ -121,22 +125,23 @@ $ kubectl  get nodes
 ```
 ```console
 NAME                      STATUS     ROLES           AGE     VERSION
-u7s-i-004cae8d99336b2ac   Ready      control-plane   3h29m   v1.32.1
-u7s-i-0fba007f256d20de2   NotReady   <none>          3h24m   v1.32.1
+u7s-i-004cae8d99336b2ac   Ready      control-plane   3h48m   v1.32.1
+u7s-i-0b2c9fce342fca957   Ready      <none>          9s      v1.32.1
 ```
 ```bash
 $ kubectl  get pods -A
 ```
 ```console
 NAMESPACE      NAME                                              READY   STATUS    RESTARTS        AGE
-kube-flannel   kube-flannel-ds-59xpz                             1/1     Running   0               3h29m
-kube-flannel   kube-flannel-ds-bqsss                             1/1     Running   1 (3h23m ago)   3h24m
-kube-system    coredns-668d6bf9bc-tgfhn                          1/1     Running   0               3h29m
-kube-system    coredns-668d6bf9bc-wctnd                          1/1     Running   0               3h29m
-kube-system    etcd-u7s-i-004cae8d99336b2ac                      1/1     Running   0               3h29m
-kube-system    kube-apiserver-u7s-i-004cae8d99336b2ac            1/1     Running   0               3h29m
-kube-system    kube-controller-manager-u7s-i-004cae8d99336b2ac   1/1     Running   0               3h29m
-kube-system    kube-proxy-l4gxx                                  1/1     Running   0               3h29m
-kube-system    kube-proxy-tw2ll                                  1/1     Running   0               3h24m
-kube-system    kube-scheduler-u7s-i-004cae8d99336b2ac            1/1     Running   0               3h29m
+kube-flannel   kube-flannel-ds-59xpz                             1/1     Running   0               3h48m
+kube-flannel   kube-flannel-ds-jwmns                             1/1     Running   0               13s
+kube-system    coredns-668d6bf9bc-tgfhn                          1/1     Running   0               3h48m
+kube-system    coredns-668d6bf9bc-wctnd                          1/1     Running   0               3h48m
+kube-system    etcd-u7s-i-004cae8d99336b2ac                      1/1     Running   0               3h48m
+kube-system    kube-apiserver-u7s-i-004cae8d99336b2ac            1/1     Running   0               3h48m
+kube-system    kube-controller-manager-u7s-i-004cae8d99336b2ac   1/1     Running   0               3h48m
+kube-system    kube-proxy-2sc2q                                  1/1     Running   0               14s
+kube-system    kube-proxy-l4gxx                                  1/1     Running   0               3h48m
+kube-system    kube-proxy-tw2ll                                  1/1     Running   0               3h43m
+kube-system    kube-scheduler-u7s-i-004cae8d99336b2ac            1/1     Running   0               3h48m
 ```

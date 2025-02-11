@@ -75,9 +75,10 @@ terraform {
   }
 }
 
-# Read in a shared script to init / finalize the flux setup
+# This needs to add the join command, a template from startup-script.sh
+# See readme one level up!
 data "template_file" "startup_script" {
-  template = templatefile("start-script.sh", {
+  template = templatefile("startup.sh", {
     selector_name   = local.name,
     desired_size    = local.desired_size
     ethernet_device = local.ethernet_device
