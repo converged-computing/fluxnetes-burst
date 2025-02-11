@@ -145,3 +145,21 @@ kube-system    kube-proxy-l4gxx                                  1/1     Running
 kube-system    kube-proxy-tw2ll                                  1/1     Running   0               3h43m
 kube-system    kube-scheduler-u7s-i-004cae8d99336b2ac            1/1     Running   0               3h48m
 ```
+
+Finally, you'll want to run `make sync-external-ip`
+
+```bash
+make sync-external-ip
+```
+```console
+docker compose exec -e HOST_IP=10.0.2.89 -e NODE_NAME=u7s-i-004cae8d99336b2ac -e NODE_SUBNET=10.100.251.0/24 -e NODE_IP=10.100.251.100 -e PORT_KUBE_APISERVER=6443 -e PORT_FLANNEL=8472 -e PORT_KUBELET=10250 -e PORT_ETCD=2379 node /usernetes/Makefile.d/sync-external-ip.sh
+node/u7s-i-004cae8d99336b2ac patched (no change)
+node/u7s-i-004cae8d99336b2ac annotated
+node/u7s-i-0b2c9fce342fca957 patched
+node/u7s-i-0b2c9fce342fca957 annotated
+node/u7s-i-0b2c9fce342fca957 untainted
+node/u7s-i-0fba007f256d20de2 patched (no change)
+node/u7s-i-0fba007f256d20de2 annotated
+```
+
+We will want to figure out how to best put these commands together to orchestrate the entire thing. The design really depends on the environment, which I'm not sure about yet.
