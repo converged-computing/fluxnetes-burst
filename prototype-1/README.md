@@ -64,6 +64,8 @@ sleep 5
 # Enable kubectl (and make publicly accessible)
 HOST_IP=$public_ip make kubeconfig
 sed "s#https://127.0.0.1:6443#https://$public_ip:6443#g" kubeconfig > kubeconfig.yaml
+
+# This is important so your kubectl knows what kubeconfig to use.
 export KUBECONFIG=$(pwd)/kubeconfig.yaml
 kubectl get pods -A
 
@@ -74,18 +76,6 @@ HOST_IP=$public_ip make join-command
 You can now copy it to your local machine to use! We will next deploy workers.
 
 ### Workers
-
-TODO customize worker name in environment also launch template. We also need the public ip address as a hostname.
-Also this will only be ssh'able from where you deploy it!
-
-# control plane
-ssh -i ~/.ssh/dinosaur-llnl-flux.pem -o IdentitiesOnly=yes ubuntu@ec2-18-234-56-43.compute-1.amazonaws.com
-
-# worker
-ssh -i ~/.ssh/dinosaur-llnl-flux.pem -o IdentitiesOnly=yes ubuntu@ec2-54-234-10-30.compute-1.amazonaws.com
-
-
-ec2-18-234-56-43.compute-1.amazonaws.com 
 
 We need Terraform! This is for arm (hpc7g).
 
@@ -117,4 +107,36 @@ echo "EOF" >> start-script.sh
 echo "make up && sleep 5 && make kubeadm-join" >> ./start-script.sh
 ```
 
+Then bring up the workers! Note you can customize terraform variables in the environment. E.g.,
 
+```bash
+export TF_VAR_name=workers
+make
+```
+
+And then you can see the worker joins by himself! Hooray!
+
+```bash
+$ kubectl  get nodes
+```
+```console
+NAME                      STATUS     ROLES           AGE     VERSION
+u7s-i-004cae8d99336b2ac   Ready      control-plane   3h29m   v1.32.1
+u7s-i-0fba007f256d20de2   NotReady   <none>          3h24m   v1.32.1
+```
+```bash
+$ kubectl  get pods -A
+```
+```console
+NAMESPACE      NAME                                              READY   STATUS    RESTARTS        AGE
+kube-flannel   kube-flannel-ds-59xpz                             1/1     Running   0               3h29m
+kube-flannel   kube-flannel-ds-bqsss                             1/1     Running   1 (3h23m ago)   3h24m
+kube-system    coredns-668d6bf9bc-tgfhn                          1/1     Running   0               3h29m
+kube-system    coredns-668d6bf9bc-wctnd                          1/1     Running   0               3h29m
+kube-system    etcd-u7s-i-004cae8d99336b2ac                      1/1     Running   0               3h29m
+kube-system    kube-apiserver-u7s-i-004cae8d99336b2ac            1/1     Running   0               3h29m
+kube-system    kube-controller-manager-u7s-i-004cae8d99336b2ac   1/1     Running   0               3h29m
+kube-system    kube-proxy-l4gxx                                  1/1     Running   0               3h29m
+kube-system    kube-proxy-tw2ll                                  1/1     Running   0               3h24m
+kube-system    kube-scheduler-u7s-i-004cae8d99336b2ac            1/1     Running   0               3h29m
+```

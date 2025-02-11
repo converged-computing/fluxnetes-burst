@@ -1,9 +1,7 @@
 
 # VARIABLES # for you to edit!
-
-variable "UN" {
-  type = string
-}
+# Set them here as "default" or in locals, or you
+# can export to the environment as TF_VAR_<name>
 
 # export like TF_VAR_worker_group_name=<name>
 variable "name" {
